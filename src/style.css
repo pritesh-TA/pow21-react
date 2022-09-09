@@ -17654,14 +17654,6 @@ input:-webkit-autofill {
   left: 12px;
 }
 
-.btn-primary {
-  background-color: #3090e2;
-  border-color: #3090e2;
-  font-size: 30px;
-  padding: 8px 89px;
-  border-radius: 0;
-  width: 343px;
-}
 .btn-blue {
   color: #fff;
   background-color: #0088cc;

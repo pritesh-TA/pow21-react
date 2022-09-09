@@ -2,8 +2,15 @@ import React from "react";
 import "./header.css";
 import canedalogo from "../../assets/images/canada.png";
 import logo from "../../assets/images/logo.png";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+  const navigate = useNavigate();
+  const logout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <div>
       <>
@@ -21,14 +28,6 @@ const Header = () => {
                       <i className="icon-angle-down" />
                     </a>
                   </li>
-                  {/* <ul className="dropdown-content">
-                    <li>
-                      <a href="#">United States</a>
-                    </li>
-                    <li>
-                      <a href="#">Canada</a>
-                    </li>
-                  </ul> */}
                 </ul>
               </div>
             </div>
@@ -37,21 +36,27 @@ const Header = () => {
       ============================================= */}
               <div className="top-links">
                 <ul>
-                  {/* Before Member Login */}
-                  {/* <li>
+                  {localStorage.getItem("X-Authorization-Token") ? (
+                    <li
+                      onClick={() => {
+                        logout();
+                      }}
+                    >
+                      <a>
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>LogOut</span>
+                      </a>
+                    </li>
+                  ) : (
+                    <li>
+                      <a>
+                        <i className="fa-solid fa-user"></i> <span>logIn</span>
+                      </a>
+                    </li>
+                  )}
+                  <li>
                     <a>
                       <i className="fa-solid fa-user"></i>
-                      <span className="user-name">user-name </span>
-                    </a>
-                  </li> */}
-                  <li>
-                    <a>
-                      <i className="fa-solid fa-lock"></i> <span>Login</span>
-                    </a>
-                  </li>
-                  <li>
-                    <a>
-                      <i className="fa-solid fa-user"></i>{" "}
                       <span>Join Today</span>
                     </a>
                   </li>

@@ -1,83 +1,116 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import md5 from "md5";
+import axios from "axios";
+import "./login.css";
 
-const Login = () => {
-  const [data, setData] = useState([]);
-
-  const getData = async () => {
-    const rowData = await axios("https://jsonplaceholder.typicode.com/users");
-    // const rowData = await axios("https://www.app.pow21.com/api/userlogin");
-    setData(rowData.data);
-    // console.log(data);
-    // console.log(rowData.data);
-  };
+const Test = () => {
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
-    getData();
+    if (localStorage.getItem("X-Authorization-Token")) {
+      navigate("/business/contributors");
+    }
   }, []);
+
+  const API_KEY = "57289d1b6580bc64a58830e09031e745";
+  const timestame = Math.round(new Date().getTime() / 1000);
+  const user_token = md5(
+    API_KEY +
+      timestame +
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36"
+  );
+
+  const getData = async () => {
+    const rowData = await axios
+      .post(
+        "https://www.app.pow21.com/api/userlogin",
+        {
+          email: email,
+          password: password,
+        },
+        {
+          headers: {
+            "X-Authorization-Time": timestame.toString(),
+            "X-Authorization-Token": user_token,
+            "Access-Control-Allow-Origin": "*",
+          },
+        }
+      )
+      .then((resp) => {
+        if (resp.data.api_message == "success") {
+          localStorage.setItem("user_data", JSON.stringify(resp.data));
+          localStorage.setItem("X-Authorization-Token", user_token);
+          navigate("/business/contributors");
+        } else {
+          alert(resp.data.api_message);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+        alert(error);
+      });
+  };
+
+  const handelClick = () => {
+    getData();
+    console.log(timestame.toString());
+    console.log(user_token);
+  };
 
   return (
     <>
-      {/* <form
-        className="nobottommargin"
-        style={{
-          maxWidth: "400px",
-          backgroundColor: " rgba(255,255,255,0.93)",
-          margin: "2rem auto",
-        }}
-      >
-        <h3>Login to your POW Account</h3>
-        <div className="col_full">
-          <label htmlFor="login-form-username">Username:</label>
-          <input
-            type="text"
-            id="login-form-username"
-            name="email"
-            value=""
-            className="form-control not-dark"
-          />
-          <div>
-            <div>Please provide your Email</div>
+      <div className="back-img-wrepper">
+        <div className="container">
+          <div className="form-wrepper">
+            <div className="mb-3">
+              <h3>Login to your POW Account</h3>
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Email address</label>
+              <input
+                type="email"
+                className="form-control"
+                id="exampleInputEmail1"
+                aria-describedby="emailHelp"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+              <div id="emailHelp" className="form-text">
+                We'll never share your email with anyone else.
+              </div>
+            </div>
+            <div className="mb-4">
+              <label htmlFor="exampleInputPassword1" className="form-label">
+                Password
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="exampleInputPassword1"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+            </div>
+            <button
+              className="btn btn-primary mt-3"
+              onClick={() => {
+                handelClick();
+              }}
+            >
+              Submit
+            </button>
           </div>
         </div>
-        <div className="col_full">
-          <label htmlFor="login-form-password">Password:</label>
-          <input
-            type="password"
-            id="login-form-password"
-            name="password"
-            value=""
-            className="form-control not-dark"
-          />
-          <div>
-            <div>Please provide your Password</div>
-          </div>
-        </div>
-        <div className="col_full nobottommargin">
-          <button
-            className="button nomargin"
-            id="login-form-submit"
-            name="login-form-submit"
-            value="login"
-            type="submit"
-          >
-            Login
-          </button>
-          <a routerLink="/register" className="fright ml-3">
-            |<span className="ml-3">Join Today</span>{" "}
-          </a>
-          <a routerLink="/forgotpassword" className="fright">
-            Forgot Password?
-          </a>
-        </div>
-      </form> */}
-
-      {data.map((item) => {
-        return <div>{item.name}</div>;
-      })}
+      </div>
     </>
   );
 };
 
-export default Login;
+export default Test;
